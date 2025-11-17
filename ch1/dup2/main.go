@@ -30,10 +30,9 @@ func main() {
 			f.Close()
 		}
 	}
-	for line, n := range counts {
-		if n > 1 {
-			fmt.Printf("%d\t%s\n", n, line)
-		}
+	var filtered_down_lines = filterDownLines(counts)
+	for line, n := range filtered_down_lines {
+		fmt.Printf("%d\t%s\n", n, line)
 	}
 }
 
@@ -43,6 +42,17 @@ func countLines(f *os.File, counts map[string]int) {
 		counts[input.Text()]++
 	}
 	// NOTE: ignoring potential errors from input.Err()
+}
+
+func filterDownLines(counts map[string]int) map[string]int {
+	var ret = make(map[string]int)
+	for line, n := range counts {
+		if n > 1 {
+			ret[line] = n
+		}
+	}
+
+	return ret
 }
 
 //!-
