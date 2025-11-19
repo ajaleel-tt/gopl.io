@@ -8,33 +8,48 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
 	for _, url := range os.Args[1:] {
+		if !strings.HasPrefix(url, "http://") {
+			url = "http://" + url
+		}
 		resp, err := http.Get(url)
-		const buf_size = 512
-		var buf [buf_size]byte
+		const bufSize = 512
+		var buf [bufSize]byte
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
+			_, err := fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
+			if err != nil {
+				return
+			}
 			os.Exit(1)
 		}
-		var num_bytes_read int
-		var reader_err error
+		fmt.Printf("HTTP Status: %s\n", resp.Status)
+		var numBytesRead int
+		var readerErr error
 		for {
-			num_bytes_read, reader_err = resp.Body.Read(buf[:])
-			if num_bytes_read > 0 {
-				os.Stdout.Write(buf[0:num_bytes_read])
+			numBytesRead, readerErr = resp.Body.Read(buf[:])
+			if numBytesRead > 0 {
+				_, err := io.Copy(os.Stdout, bytes.NewReader(buf[0:numBytesRead]))
+				if err != nil {
+					return
+				}
 			}
-			if reader_err == io.EOF {
+			if readerErr == io.EOF {
 				break
 			}
-			if reader_err != nil {
-				fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", url, err)
+			if readerErr != nil {
+				_, err := fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", url, err)
+				if err != nil {
+					return
+				}
 				os.Exit(1)
 			}
 		}
