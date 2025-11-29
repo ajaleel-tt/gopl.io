@@ -4,7 +4,7 @@
 // See page 45.
 
 // (Package doc comment intentionally malformed to demonstrate golint.)
-//!+
+// !+
 package popcount
 
 // pc[i] is the population count of i.
@@ -26,6 +26,38 @@ func PopCount(x uint64) int {
 		pc[byte(x>>(5*8))] +
 		pc[byte(x>>(6*8))] +
 		pc[byte(x>>(7*8))])
+}
+
+func PopCountLoop(x uint64) int {
+	sum := 0
+	for i := uint(0); i < 8; i++ {
+		sum += int(pc[byte(x>>(i*8))])
+	}
+	return sum
+}
+
+// PopCountShift returns the population count (number of set bits) of x
+// by shifting x right 64 times and testing the least-significant bit.
+func PopCountShift(x uint64) int {
+	n := 0
+	for i := 0; i < 64; i++ {
+		if x&1 == 1 {
+			n++
+		}
+		x >>= 1
+	}
+	return n
+}
+
+// PopCountClear returns the population count (number of set bits) of x
+// by repeatedly clearing the rightmost non-zero bit.
+func PopCountClear(x uint64) int {
+	n := 0
+	for x != 0 {
+		x = x & (x - 1) // clear rightmost non-zero bit
+		n++
+	}
+	return n
 }
 
 //!-

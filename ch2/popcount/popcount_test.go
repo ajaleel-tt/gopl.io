@@ -67,12 +67,31 @@ func BenchmarkPopCountByShifting(b *testing.B) {
 	}
 }
 
+func BenchmarkPopCountLoop(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		popcount.PopCountLoop(0x1234567890ABCDEF)
+	}
+}
+
+func BenchmarkPopCountShift(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		popcount.PopCountShift(0x1234567890ABCDEF)
+	}
+}
+
+func BenchmarkPopCountClear(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		popcount.PopCountClear(0x1234567890ABCDEF)
+	}
+}
+
 // Go 1.6, 2.67GHz Xeon
 // $ go test -cpu=4 -bench=. gopl.io/ch2/popcount
 // BenchmarkPopCount-4                  200000000         6.30 ns/op
 // BenchmarkBitCount-4                  300000000         4.15 ns/op
 // BenchmarkPopCountByClearing-4        30000000         45.2 ns/op
 // BenchmarkPopCountByShifting-4        10000000        153 ns/op
+// BenchmarkPopCountLoop-4              100000000        11.5 ns/op
 //
 // Go 1.6, 2.5GHz Intel Core i5
 // $ go test -cpu=4 -bench=. gopl.io/ch2/popcount
