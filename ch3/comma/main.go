@@ -6,14 +6,14 @@
 // Comma prints its argument numbers with a comma at each power of 1000.
 //
 // Example:
-// 	$ go build gopl.io/ch3/comma
-//	$ ./comma 1 12 123 1234 1234567890
-// 	1
-// 	12
-// 	123
-// 	1,234
-// 	1,234,567,890
 //
+//	$ go build gopl.io/ch3/comma
+//	$ ./comma 1 12 123 1234 1234567890
+//	1
+//	12
+//	123
+//	1,234
+//	1,234,567,890
 package main
 
 import (
@@ -27,14 +27,25 @@ func main() {
 	}
 }
 
-//!+
+// !+
 // comma inserts commas in a non-negative decimal integer string.
 func comma(s string) string {
+	return commaRecursive(s, "")
+}
+
+func commaRecursive(s string, acc string) string {
 	n := len(s)
 	if n <= 3 {
-		return s
+		if acc == "" {
+			return s
+		}
+		return s + "," + acc
 	}
-	return comma(s[:n-3]) + "," + s[n-3:]
+	newAcc := s[n-3:]
+	if acc != "" {
+		newAcc += "," + acc
+	}
+	return commaRecursive(s[:n-3], newAcc)
 }
 
 //!-
