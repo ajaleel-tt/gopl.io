@@ -30,7 +30,12 @@ func main() {
 // !+
 // comma inserts commas in a non-negative decimal integer string.
 func comma(s string) string {
-	return commaRecursive(s, "")
+	recResult := commaRecursive(s, "")
+	iterResult := commaIterative(s)
+	if recResult != iterResult {
+		panic(fmt.Sprintf("results differ: %s != %s", recResult, iterResult))
+	}
+	return recResult
 }
 
 func commaRecursive(s string, acc string) string {
@@ -46,6 +51,26 @@ func commaRecursive(s string, acc string) string {
 		newAcc += "," + acc
 	}
 	return commaRecursive(s[:n-3], newAcc)
+}
+
+func commaIterative(s string) string {
+	var ret []rune
+	runes := []rune(s)
+	reverseRunes(runes)
+	for i, r := range runes {
+		if i > 0 && i%3 == 0 {
+			ret = append(ret, ',')
+		}
+		ret = append(ret, r)
+	}
+	reverseRunes(ret)
+	return string(ret)
+}
+
+func reverseRunes(r []rune) {
+	for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
+		r[i], r[j] = r[j], r[i]
+	}
 }
 
 //!-
