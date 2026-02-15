@@ -6,20 +6,61 @@
 // The sha256 command computes the SHA256 hash (an array) of a string.
 package main
 
-import "fmt"
+import (
+	"crypto/sha256"
+	"crypto/sha512"
+	"flag"
+	"fmt"
+	"os"
+)
 
-//!+
-import "crypto/sha256"
+const usage = `Usage: sha256 [OPTIONS]
+Compute SHA hash of strings.
+
+Options:
+  -algo string
+        Hash algorithm to use: sha256, sha384, or sha512 (default "sha256")
+`
+
+var algo = flag.String(
+	"algo", "sha256", "Hash algorithm: sha256, sha384, or sha512",
+)
 
 func main() {
-	c1 := sha256.Sum256([]byte("x"))
-	c2 := sha256.Sum256([]byte("X"))
-	fmt.Printf("%x\n%x\n%t\n%T\n", c1, c2, c1 == c2, c1)
-	// Output:
-	// 2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881
-	// 4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015
-	// false
-	// [32]uint8
+	flag.Usage = func() {
+		_, _ = fmt.Fprint(os.Stderr, usage)
+	}
+	flag.Parse()
+
+	if flag.NArg() < 1 {
+		_, _ = fmt.Fprintln(os.Stderr, "Error: no input provided")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	input := []byte(flag.Arg(0))
+
+	switch *algo {
+	case "sha256":
+		fmt.Printf("%x\n", sha256.Sum256(input))
+	case "sha384":
+		fmt.Printf("%x\n", sha512.Sum384(input))
+	case "sha512":
+		fmt.Printf("%x\n", sha512.Sum512(input))
+	default:
+		_, _ = fmt.Fprintf(os.Stderr, "Unknown algorithm: %s\n", *algo)
+		flag.Usage()
+		os.Exit(1)
+	}
+}
+
+//goland:noinspection GoUnusedFunction
+func compareBytes(a [32]byte, b [32]byte) [32]byte {
+	var c [32]byte
+	for i := 0; i < 32; i++ {
+		c[i] = a[i] ^ b[i]
+	}
+	return c
 }
 
 //!-
