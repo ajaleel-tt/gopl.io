@@ -33,7 +33,9 @@ func main() {
 	//!-main
 }
 
-//!+alt
+// !+alt
+//
+//goland:noinspection GoUnusedFunction
 func nonempty2(strings []string) []string {
 	out := strings[:0] // zero-length slice of original
 	for _, s := range strings {
@@ -45,3 +47,20 @@ func nonempty2(strings []string) []string {
 }
 
 //!-alt
+
+// removeAdjacentDups removes adjacent duplicates from a string slice in place.
+//
+//goland:noinspection GoUnusedFunction
+func removeAdjacentDups(strings []string) []string {
+	if len(strings) == 0 {
+		return strings
+	}
+	i := 0
+	for j := 1; j < len(strings); j++ {
+		if strings[j] != strings[i] {
+			i++
+			strings[i] = strings[j]
+		}
+	}
+	return strings[:i+1]
+}
