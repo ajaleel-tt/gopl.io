@@ -32,4 +32,12 @@ type User struct {
 	HTMLURL string `json:"html_url"`
 }
 
+const APIURL = "https://api.github.com"
+
+type IssueRequest struct {
+	Title string `json:"title,omitempty"`
+	Body  string `json:"body,omitempty"`
+	State string `json:"state,omitempty"`
+}
+
 //!-
