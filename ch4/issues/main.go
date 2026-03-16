@@ -11,18 +11,47 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"gopl.io/ch4/github"
 )
 
-//!+
+// !+
 func main() {
 	result, err := github.SearchIssues(os.Args[1:])
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("%d issues:\n", result.TotalCount)
+
+	now := time.Now()
+	var lessThanMonth, lessThanYear, moreThanYear []*github.Issue
 	for _, item := range result.Items {
+		age := now.Sub(item.CreatedAt)
+		switch {
+		case age < 30*24*time.Hour:
+			lessThanMonth = append(lessThanMonth, item)
+		case age < 365*24*time.Hour:
+			lessThanYear = append(lessThanYear, item)
+		default:
+			moreThanYear = append(moreThanYear, item)
+		}
+	}
+
+	fmt.Printf("\n--- Less than a month old (%d) ---\n", len(lessThanMonth))
+	for _, item := range lessThanMonth {
+		fmt.Printf("#%-5d %9.9s %.55s\n",
+			item.Number, item.User.Login, item.Title)
+	}
+
+	fmt.Printf("\n--- Less than a year old (%d) ---\n", len(lessThanYear))
+	for _, item := range lessThanYear {
+		fmt.Printf("#%-5d %9.9s %.55s\n",
+			item.Number, item.User.Login, item.Title)
+	}
+
+	fmt.Printf("\n--- More than a year old (%d) ---\n", len(moreThanYear))
+	for _, item := range moreThanYear {
 		fmt.Printf("#%-5d %9.9s %.55s\n",
 			item.Number, item.User.Login, item.Title)
 	}
