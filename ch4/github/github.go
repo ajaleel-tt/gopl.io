@@ -23,8 +23,15 @@ type Issue struct {
 	Title     string
 	State     string
 	User      *User
+	Milestone *Milestone
 	CreatedAt time.Time `json:"created_at"`
 	Body      string    // in Markdown format
+}
+
+type Milestone struct {
+	Number  int
+	Title   string
+	HTMLURL string `json:"html_url"`
 }
 
 type User struct {
