@@ -7,6 +7,7 @@
 // result as HTML, and prints the links within it.
 //
 // Usage:
+//
 //	findlinks url ...
 package main
 
@@ -14,6 +15,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -33,7 +35,7 @@ func visit(links []string, n *html.Node) []string {
 	return links
 }
 
-//!+
+// !+
 func main() {
 	for _, url := range os.Args[1:] {
 		links, err := findLinks(url)
@@ -55,15 +57,33 @@ func findLinks(url string) ([]string, error) {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		return nil, fmt.Errorf("getting %s: %s", url, resp.Status)
 	}
 	doc, err := html.Parse(resp.Body)
-	resp.Body.Close()
+	_ = resp.Body.Close()
 	if err != nil {
 		return nil, fmt.Errorf("parsing %s as HTML: %v", url, err)
 	}
 	return visit(nil, doc), nil
+}
+
+// countWordsAndImages
+//
+//goland:noinspection GoUnusedFunction
+func countWordsAndImages(n *html.Node) (words, images int) {
+	if n.Type == html.ElementNode && n.Data == "img" {
+		images++
+	}
+	if n.Type == html.TextNode {
+		words += len(strings.Fields(n.Data))
+	}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		w, i := countWordsAndImages(c)
+		words += w
+		images += i
+	}
+	return
 }
 
 //!-
