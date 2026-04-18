@@ -1,0 +1,26 @@
+# IntelliJ / GoLand
+.idea/
+*.iml
+
+# Compiled Go binaries
+ch1/dup1/lines
+ch1/echo1/main
+ch1/fetch/main
+ch4/wordfreq/wordfreq
+ch5/findlinks1/findlinks1
+/findlinks1
+/fetchall
+/issues
+/issuescrud
+/issuesweb
+/poster
+/xkcd
+
+# Downloaded images
+*.jpg
+
+# Downloaded websites / HTML files
+/alexa.com
+/godoc.org
+/golang.org
+/gopl.io
